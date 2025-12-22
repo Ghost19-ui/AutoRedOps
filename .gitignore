@@ -1,0 +1,10 @@
+# .gitignore
+
+
+# Do NOT ignore the example file (so people know how to setup)
+!config.example.yaml
+
+# Ignore scan data
+data/scans/*
+data/reports/*
+...

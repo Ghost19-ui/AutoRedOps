@@ -1,0 +1,21 @@
+# INSTRUCTIONS:
+# 1. Update the 'nmap_path' to match your specific system
+#    - Windows example: "C:\\Program Files (x86)\\Nmap\\nmap.exe"
+#    - Linux example: "/usr/bin/nmap"
+
+default_subnet: "192.168.1.0/24"
+
+nmap:
+  path: "/usr/bin/nmap"  # Default placeholder
+  scripts: "vuln,vulners"
+
+metasploit:
+  host: "127.0.0.1"
+  port: 55553
+  user: "msf"
+  password: "msf123"
+  ssl: true
+
+paths:
+  scans: "data/scans"
+  reports: "data/reports"
