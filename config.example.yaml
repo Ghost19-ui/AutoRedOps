@@ -1,0 +1,22 @@
+# config.example.yaml (Safe to upload)
+
+# INSTRUCTIONS:
+# 1. Rename this file to 'config.yaml'
+# 2. Update the 'nmap_path' to match your specific system
+
+default_subnet: "192.168.1.0/24"
+
+nmap:
+  path: "/usr/bin/nmap"  # Windows: "C:\\Program Files (x86)\\Nmap\\nmap.exe"
+  scripts: "vuln,vulners"
+
+metasploit:
+  host: "127.0.0.1"
+  port: 55553
+  user: "msf"
+  password: "YOUR_PASSWORD_HERE" # <--- Sanitized
+  ssl: true
+
+paths:
+  scans: "data/scans"
+  reports: "data/reports"
