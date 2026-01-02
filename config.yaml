@@ -1,19 +1,18 @@
-# INSTRUCTIONS:
-# 1. Update the 'nmap_path' to match your specific system
-#    - Windows example: "C:\\Program Files (x86)\\Nmap\\nmap.exe"
-#    - Linux example: "/usr/bin/nmap"
+# config.yaml (LINUX EDITION)
 
+# Default target range (Change this to match your lab)
 default_subnet: "192.168.1.0/24"
 
 nmap:
-  path: "/usr/bin/nmap"  # Default placeholder
+  # Standard Linux path for Nmap
+  path: "/usr/bin/nmap"
   scripts: "vuln,vulners"
 
 metasploit:
   host: "127.0.0.1"
   port: 55553
   user: "msf"
-  password: "msf123"
+  password: "msf" 
   ssl: true
 
 paths:

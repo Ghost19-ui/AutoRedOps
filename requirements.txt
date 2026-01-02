@@ -2,7 +2,5 @@ python-nmap
 pymetasploit3==1.0.3
 pyyaml
 requests
-streamlit
 openai
 tiktoken
-# chromadb  <-- Keep commented out to avoid build errors on user machines
