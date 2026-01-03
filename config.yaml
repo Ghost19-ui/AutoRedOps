@@ -13,7 +13,7 @@ metasploit:
   port: 55553
   user: "msf"
   password: "msf" 
-  ssl: true
+  ssl: false
 
 paths:
   scans: "data/scans"
