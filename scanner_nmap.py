@@ -1,6 +1,9 @@
 import nmap
 import os
 import yaml
+import socket
+import fcntl
+import struct
 
 class NmapScanner:
     def __init__(self, config_path='config.yaml'):
@@ -14,26 +17,61 @@ class NmapScanner:
         if not os.path.exists(self.scans_dir):
             os.makedirs(self.scans_dir)
 
+    def get_local_subnet(self):
+        """Auto-detects the local IP and calculates the /24 subnet."""
+        try:
+            # Connect to an external IP (doesn't send data) to find our route
+            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            s.connect(("8.8.8.8", 80))
+            local_ip = s.getsockname()[0]
+            s.close()
+            
+            # Assume /24 subnet (standard for home/labs)
+            subnet = ".".join(local_ip.split('.')[:3]) + ".0/24"
+            return subnet
+        except Exception:
+            return self.config['default_subnet'] # Fallback to config
+
     def discover_hosts(self):
-        subnet = self.config['default_subnet']
-        print(f"[*] Discovering hosts on {subnet}...")
-        self.nm.scan(hosts=subnet, arguments='-sn', sudo=True)
-        return [host for host in self.nm.all_hosts() if self.nm[host].state() == 'up']
+        """Scans the detected subnet for live hosts."""
+        subnet = self.get_local_subnet()
+        print(f"[*] Auto-Detected Network: {subnet}")
+        print(f"[*] Scanning for live hosts... (Please wait)")
+        
+        try:
+            self.nm.scan(hosts=subnet, arguments='-sn', sudo=True)
+            hosts = [host for host in self.nm.all_hosts() if self.nm[host].state() == 'up']
+            return hosts
+        except Exception as e:
+            print(f"[-] Discovery failed: {e}")
+            return []
 
     def scan_target(self, target_ip):
         print(f"[*] Starting full scan on {target_ip}...")
-        # Using -sS (Stealth), -sV (Versions), -O (OS), and vuln scripts
         args = "-sS -sV -O --script vuln"
-        self.nm.scan(hosts=target_ip, arguments=args, sudo=True)
-        
-        # Save XML for record
-        output_file = os.path.join(self.scans_dir, f"{target_ip}_full.xml")
-        with open(output_file, 'w') as f:
-            f.write(self.nm.get_nmap_last_output())
+        try:
+            self.nm.scan(hosts=target_ip, arguments=args, sudo=True)
             
-        return self.parse_results(target_ip)
+            # --- FIX: Handle Bytes vs String for File Writing ---
+            output_file = os.path.join(self.scans_dir, f"{target_ip}_full.xml")
+            raw_data = self.nm.get_nmap_last_output()
+            
+            if isinstance(raw_data, bytes):
+                with open(output_file, 'wb') as f:
+                    f.write(raw_data)
+            else:
+                with open(output_file, 'w') as f:
+                    f.write(raw_data)
+                    
+            return self.parse_results(target_ip)
+        except Exception as e:
+            print(f"[-] Scan failed: {e}")
+            return {'ip': target_ip, 'ports': []}
 
     def parse_results(self, target_ip):
+        if target_ip not in self.nm.all_hosts():
+            return {'ip': target_ip, 'ports': []}
+
         host_data = self.nm[target_ip]
         parsed = {'ip': target_ip, 'os': 'Unknown', 'ports': []}
         
